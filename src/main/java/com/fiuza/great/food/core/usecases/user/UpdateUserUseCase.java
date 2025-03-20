@@ -5,6 +5,8 @@ import com.fiuza.great.food.core.entities.restaurant.Restaurant;
 import com.fiuza.great.food.core.entities.user.User;
 import com.fiuza.great.food.core.exceptions.NotFoundException;
 import com.fiuza.great.food.core.gateway.UserGateway;
+
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -33,7 +35,7 @@ public class UpdateUserUseCase {
               new Date(),
               userDto.address(),
               user.getUserType(),
-              null);
+              Collections.emptyList());
 
       return userGateway.update(updatedUser);
     }

@@ -1,13 +1,7 @@
 package com.fiuza.great.food.application.handlers;
 
-import com.fiuza.great.food.core.dto.errors.CannotUseSameEmailExceptionDto;
-import com.fiuza.great.food.core.dto.errors.IncorrectPasswordExceptionDto;
-import com.fiuza.great.food.core.dto.errors.NotFoundExceptionDto;
-import com.fiuza.great.food.core.dto.errors.NullDataNotNullExceptionDto;
-import com.fiuza.great.food.core.exceptions.CannotUseSameEmailException;
-import com.fiuza.great.food.core.exceptions.IncorrectPasswordException;
-import com.fiuza.great.food.core.exceptions.NotFoundException;
-import com.fiuza.great.food.core.exceptions.NullDataNotNullException;
+import com.fiuza.great.food.core.dto.errors.*;
+import com.fiuza.great.food.core.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -46,5 +40,13 @@ public class ControllerExceptionHandler {
     HttpStatus status = HttpStatus.BAD_REQUEST;
     return ResponseEntity.status(status.value())
         .body(new CannotUseSameEmailExceptionDto(exception.getMessage(), status.value()));
+  }
+
+  @ExceptionHandler(WrongTypeOfUserException.class)
+  public ResponseEntity<WrongTypeOfUserExceptionDto> handlerWrongTypeOfUserException(
+          WrongTypeOfUserException exception) {
+    HttpStatus status = HttpStatus.BAD_REQUEST;
+    return ResponseEntity.status(status.value())
+            .body(new WrongTypeOfUserExceptionDto(exception.getMessage(), status.value()));
   }
 }
