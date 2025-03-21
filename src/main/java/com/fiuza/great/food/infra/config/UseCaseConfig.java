@@ -6,12 +6,18 @@ import com.fiuza.great.food.infra.adapter.repository.UserRepositoryImp;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.Clock;
+
 @Configuration
 public class UseCaseConfig {
+  @Bean
+  public Clock clock() {
+    return Clock.systemDefaultZone();
+  }
 
   @Bean
-  public CreateUserUseCase createUserUseCase(UserGateway userGateway) {
-    return new CreateUserUseCase(userGateway);
+  public CreateUserUseCase createUserUseCase(UserGateway userGateway, Clock clock) {
+    return new CreateUserUseCase(userGateway,clock);
   }
 
   @Bean
