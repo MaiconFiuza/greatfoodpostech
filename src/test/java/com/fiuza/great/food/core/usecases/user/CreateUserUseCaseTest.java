@@ -2,6 +2,10 @@ package com.fiuza.great.food.core.usecases.user;
 
 import com.fiuza.great.food.core.dto.request.user.UserDto;
 import com.fiuza.great.food.core.entities.user.User;
+import com.fiuza.great.food.core.exceptions.InternalServerError;
+import com.fiuza.great.food.core.exceptions.NotFoundException;
+import com.fiuza.great.food.core.exceptions.NullDataNotNullException;
+import com.fiuza.great.food.core.exceptions.WrongTypeOfUserException;
 import com.fiuza.great.food.core.gateway.UserGateway;
 import com.fiuza.great.food.helper.dto.user.UserDtoHelper;
 import com.fiuza.great.food.helper.entities.user.UserHelper;
@@ -18,6 +22,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Date;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.mockito.ArgumentCaptor;
@@ -69,6 +74,39 @@ public class CreateUserUseCaseTest {
         assertThat(capturedUser.getName()).isEqualTo(userDto.name());
         assertThat(capturedUser.getEmail()).isEqualTo(userDto.email());
         assertThat(savedUser).isNotNull();
+    }
+
+    @Test
+    void create_user_should_fail_with_null_data() {
+        // arrange
+        UserDto userDto = UserDtoHelper.withNull();
+
+        when(userGateway.findUserByEmailValidation(userDto.email())).thenReturn(false);
+
+        // act
+        assertThatThrownBy(
+                () -> createUserUseCase.execute(userDto))
+                .isInstanceOf(NullDataNotNullException.class)
+                .hasMessage("Todos os campos devem ser enviados");
+
+        // assert
+        verify(userGateway, times(0)).findUserByEmail(any(String.class));
+    }
+
+    @Test
+    void create_user_should_fail_with_internal_server_error() {
+        // arrange
+        UserDto userDto = UserDtoHelper.withNull();
+
+        when(userGateway.findUserByEmailValidation(userDto.email())).thenThrow(new InternalServerError("Usuário não encontrado"));
+
+        // act
+        assertThatThrownBy(
+                () -> createUserUseCase.execute(userDto))
+                .isInstanceOf(InternalServerError.class);
+
+        // assert
+        verify(userGateway, times(0)).findUserByEmail(any(String.class));
     }
 }
 

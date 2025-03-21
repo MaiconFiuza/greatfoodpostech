@@ -85,7 +85,7 @@ public class UserRepositoryImp implements UserGateway {
                       r.getName(),
                       r.getKitchenType(),
                       r.getOpeningHours(),
-                      user); // 🚀 Agora retorna corretamente
+                      user);
                 })
             .collect(Collectors.toList());
 

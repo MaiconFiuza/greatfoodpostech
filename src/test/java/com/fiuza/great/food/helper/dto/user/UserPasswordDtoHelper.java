@@ -11,4 +11,11 @@ public class UserPasswordDtoHelper {
                 "novasenha"
         );
     }
+
+    public static UserPasswordDto changePasswordCorrect() {
+        return new UserPasswordDto(
+                "teste123",
+                "novasenha"
+        );
+    }
 }

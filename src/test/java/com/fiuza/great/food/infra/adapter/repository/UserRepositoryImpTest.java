@@ -15,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -63,5 +65,45 @@ public class UserRepositoryImpTest {
         assertThat(capturedUser.getName()).isEqualTo(userResult.getName());
         assertThat(capturedUser.getEmail()).isEqualTo(userResult.getEmail());
         assertThat(savedUser).isNotNull();
+    }
+
+    @Test
+    void update_success() {
+        // arrange
+        User userDefault = UserHelper.createUserDefault();
+        UserModel userModel = UserModelHelper.createUserDefault();
+        User userResult = UserHelper.createUserWithId();
+
+
+        when(userRepository.save(any(UserModel.class))).thenReturn(userModel);
+
+        // act
+        var savedUser = userRepositoryImp.update(userDefault);
+
+        // assert
+        ArgumentCaptor<UserModel> userCaptor = ArgumentCaptor.forClass(UserModel.class);
+        verify(userRepository, times(1)).save(userCaptor.capture());
+
+        UserModel capturedUser = userCaptor.getValue();
+
+        assertThat(capturedUser.getName()).isEqualTo(userResult.getName());
+        assertThat(capturedUser.getEmail()).isEqualTo(userResult.getEmail());
+        assertThat(savedUser).isNotNull();
+    }
+
+    @Test
+    void find_user_by_id_success() {
+        // arrange
+        UserModel userModel = UserModelHelper.createUserDefault();
+        User userResult = UserHelper.createUserWithId();
+
+
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(userModel));
+
+        // act
+        userRepositoryImp.findUserById(userResult.getId());
+
+        // assert
+        verify(userRepository, times(1)).findById(userResult.getId());
     }
 }

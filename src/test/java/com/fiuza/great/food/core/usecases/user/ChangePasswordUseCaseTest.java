@@ -1,8 +1,10 @@
 package com.fiuza.great.food.core.usecases.user;
 
+import com.fiuza.great.food.core.dto.request.user.UserPasswordDto;
 import com.fiuza.great.food.core.dto.request.user.UserUpdateDto;
 import com.fiuza.great.food.core.entities.user.User;
 import com.fiuza.great.food.core.gateway.UserGateway;
+import com.fiuza.great.food.helper.dto.user.UserPasswordDtoHelper;
 import com.fiuza.great.food.helper.dto.user.UserUpdatedDtoHelper;
 import com.fiuza.great.food.helper.entities.user.UserHelper;
 import org.junit.jupiter.api.AfterEach;
@@ -26,21 +28,21 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class UpdateUserUseCaseTest {
+public class ChangePasswordUseCaseTest {
     Clock fixedClock = Clock.fixed(Instant.parse("2024-03-21T10:15:30.00Z"), ZoneId.of("UTC"));
 
     @Mock
     UserGateway userGateway;
 
     @InjectMocks
-    UpdateUserUseCase updateUserUseCase;
+    ChangePasswordUseCase changePasswordUseCase;
 
     AutoCloseable mock;
 
     @BeforeEach
     void setup() {
         mock = MockitoAnnotations.openMocks(this);
-        updateUserUseCase = new UpdateUserUseCase(userGateway, fixedClock);
+        changePasswordUseCase = new ChangePasswordUseCase(userGateway, fixedClock);
     }
 
     @AfterEach
@@ -49,9 +51,9 @@ public class UpdateUserUseCaseTest {
     }
 
     @Test
-    void update_user_with_success() {
+    void update_user_password_with_success() {
         // arrange
-        UserUpdateDto userUpdateDto = UserUpdatedDtoHelper.defaultDto();
+        UserPasswordDto userUpdateDto = UserPasswordDtoHelper.changePasswordCorrect();
         User userResult = UserHelper.createUserWithId();
 
         Date expectedDate = Date.from(Instant.now(fixedClock));
@@ -60,7 +62,7 @@ public class UpdateUserUseCaseTest {
         when(userGateway.update(any(User.class))).thenReturn(userResult);
 
         // act
-        var savedUser = updateUserUseCase.execute(userUpdateDto, userResult.getId());
+        var savedUser = changePasswordUseCase.execute( userResult.getId(), userUpdateDto);
 
         // assert
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
@@ -68,9 +70,8 @@ public class UpdateUserUseCaseTest {
 
         User capturedUser = userCaptor.getValue();
 
-        assertThat(capturedUser.getLastModification()).isCloseTo(expectedDate, 1000); // Aceita 1 segundo de diferença
-        assertThat(capturedUser.getName()).isEqualTo(userUpdateDto.name());
-        assertThat(capturedUser.getEmail()).isEqualTo(userUpdateDto.email());
+        assertThat(capturedUser.getLastModification()).isCloseTo(expectedDate, 1000);
+        assertThat(capturedUser.getPassword()).isEqualTo(userUpdateDto.newPassword());
         assertThat(savedUser).isNotNull();
     }
 }
