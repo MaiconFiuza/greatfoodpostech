@@ -65,7 +65,7 @@ public class RestaurantController {
     logger.info("GET /restaurant/"+id);
     Restaurant restaurant = getRestaurantByIdUseCase.execute(id);
     RestaurantDtoResponse result = RestaurantPresenter.toRestaurantDtoResponse(restaurant);
-    return ResponseEntity.status(HttpStatus.CREATED).body(result);
+    return ResponseEntity.ok(result);
   }
 
   @Operation(
