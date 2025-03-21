@@ -6,6 +6,8 @@ import com.fiuza.great.food.core.entities.user.User;
 import com.fiuza.great.food.core.exceptions.NotFoundException;
 import com.fiuza.great.food.core.gateway.UserGateway;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -13,8 +15,11 @@ import java.util.List;
 public class UpdateUserUseCase {
 
   private final UserGateway userGateway;
+  private final Clock clock;
 
-  public UpdateUserUseCase(UserGateway userGateway) {
+
+  public UpdateUserUseCase(UserGateway userGateway, Clock clock) {
+    this.clock = clock;
     this.userGateway = userGateway;
   }
 
@@ -32,7 +37,7 @@ public class UpdateUserUseCase {
               userDto.email(),
               userDto.login(),
               user.getPassword(),
-              new Date(),
+              Date.from(Instant.now(clock)),
               userDto.address(),
               user.getUserType(),
               Collections.emptyList());

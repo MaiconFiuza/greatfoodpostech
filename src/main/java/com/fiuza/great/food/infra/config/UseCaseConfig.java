@@ -26,13 +26,13 @@ public class UseCaseConfig {
   }
 
   @Bean
-  public UpdateUserUseCase updateUserUseCase(UserGateway userGateway) {
-    return new UpdateUserUseCase(userGateway);
+  public UpdateUserUseCase updateUserUseCase(UserGateway userGateway, Clock clock) {
+    return new UpdateUserUseCase(userGateway, clock);
   }
 
   @Bean
-  public ChangePasswordUseCase changePasswordUseCase(UserGateway userGateway) {
-    return new ChangePasswordUseCase(userGateway);
+  public ChangePasswordUseCase changePasswordUseCase(UserGateway userGateway, Clock clock) {
+    return new ChangePasswordUseCase(userGateway, clock);
   }
 
   @Bean

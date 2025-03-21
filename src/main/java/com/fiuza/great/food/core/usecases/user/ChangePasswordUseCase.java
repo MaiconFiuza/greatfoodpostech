@@ -5,14 +5,19 @@ import com.fiuza.great.food.core.entities.user.User;
 import com.fiuza.great.food.core.exceptions.IncorrectPasswordException;
 import com.fiuza.great.food.core.exceptions.NotFoundException;
 import com.fiuza.great.food.core.gateway.UserGateway;
+
+import java.time.Clock;
+import java.time.Instant;
 import java.util.Date;
 import java.util.Objects;
 
 public class ChangePasswordUseCase {
   private final UserGateway userGateway;
+  private final Clock clock;
 
-  public ChangePasswordUseCase(UserGateway userGateway) {
+  public ChangePasswordUseCase(UserGateway userGateway, Clock clock) {
     this.userGateway = userGateway;
+    this.clock = clock;
   }
 
   public User execute(Long id, UserPasswordDto userPasswordDto) {
@@ -32,7 +37,7 @@ public class ChangePasswordUseCase {
             user.getEmail(),
             user.getLogin(),
             userPasswordDto.newPassword(),
-            new Date(),
+            Date.from(Instant.now(clock)),
             user.getAddress(),
             user.getUserType(),
             user.getRestaurants());
