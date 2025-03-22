@@ -106,4 +106,50 @@ public class UserRepositoryImpTest {
         // assert
         verify(userRepository, times(1)).findById(userResult.getId());
     }
+
+    @Test
+    void find_user_by_email_success() {
+        // arrange
+        UserModel userModel = UserModelHelper.createUserDefault();
+        User userResult = UserHelper.createUserWithId();
+
+
+        when(userRepository.findByEmail(any(String.class))).thenReturn(Optional.of(userModel));
+
+        // act
+        userRepositoryImp.findUserByEmail(userResult.getEmail());
+
+        // assert
+        verify(userRepository, times(1)).findByEmail(userResult.getEmail());
+    }
+
+    @Test
+    void find_user_by_email_validation_success() {
+        // arrange
+        UserModel userModel = UserModelHelper.createUserDefault();
+        User userResult = UserHelper.createUserWithId();
+
+
+        when(userRepository.findByEmail(any(String.class))).thenReturn(Optional.of(userModel));
+
+        // act
+        userRepositoryImp.findUserByEmailValidation(userResult.getEmail());
+
+        // assert
+        verify(userRepository, times(1)).findByEmail(userResult.getEmail());
+    }
+
+    @Test
+    void delete_user_success() {
+        // arrange
+        User user = UserHelper.createUserWithId();
+
+        doNothing().when(userRepository).deleteById(any(Long.class));
+
+        // act
+        userRepositoryImp.delete(user.getId());
+
+        // assert
+        verify(userRepository, times(1)).deleteById(user.getId());
+    }
 }

@@ -23,6 +23,7 @@ public class Restaurant {
 
   private List<Item> items = Collections.emptyList();
 
+  public Restaurant(){};
   public Restaurant(
       Long id, String name, KitchenType kitchenType, String openingHours, User owner) {
     this.id = id;

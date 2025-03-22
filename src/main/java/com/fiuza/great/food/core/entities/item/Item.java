@@ -12,6 +12,7 @@ public class Item {
   private String pic;
   private Restaurant restaurant;
 
+  public Item(){};
   public Item(
       Long id,
       String name,

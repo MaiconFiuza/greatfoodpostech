@@ -20,6 +20,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -66,5 +68,56 @@ public class ItemRepositoryImpTest {
 
         assertThat(capturedUser.getName()).isEqualTo(itemResult.getName());
         assertThat(savedItem).isNotNull();
+    }
+
+    @Test
+    void update_success() {
+        // arrange
+        Item item = ItemHelper.withouId();
+        ItemModel itemModel = ItemModelHelper.createItemDefault();
+        Item itemResult = ItemHelper.defaultDto();
+
+        when(itemRepository.save(any(ItemModel.class))).thenReturn(itemModel);
+
+        // act
+        var savedItem= itemRepositoryImp.update(item);
+
+        // assert
+        ArgumentCaptor<ItemModel> userCaptor = ArgumentCaptor.forClass(ItemModel.class);
+        verify(itemRepository, times(1)).save(userCaptor.capture());
+
+        ItemModel capturedUser = userCaptor.getValue();
+
+        assertThat(capturedUser.getName()).isEqualTo(itemResult.getName());
+        assertThat(savedItem).isNotNull();
+    }
+
+    @Test
+    void find_item_by_id_success() {
+        // arrange
+        ItemModel itemModel = ItemModelHelper.createItemDefault();
+        Item itemResult = ItemHelper.defaultDto();
+
+        when(itemRepository.findById(any(Long.class))).thenReturn(Optional.of(itemModel));
+
+        // act
+        itemRepositoryImp.findItemById(itemResult.getId());
+
+        // assert
+        verify(itemRepository, times(1)).findById(itemResult.getId());
+    }
+
+    @Test
+    void delete_item_success() {
+        // arrange
+        Item itemResult = ItemHelper.defaultDto();
+
+        doNothing().when(itemRepository).deleteById(any(Long.class));
+
+        // act
+        itemRepositoryImp.delete(itemResult.getId());
+
+        // assert
+        verify(itemRepository, times(1)).deleteById(itemResult.getId());
     }
 }

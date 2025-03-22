@@ -3,6 +3,8 @@ package com.fiuza.great.food.core.usecases.user;
 import com.fiuza.great.food.core.dto.request.user.UserDeleteDto;
 import com.fiuza.great.food.core.dto.request.user.UserPasswordDto;
 import com.fiuza.great.food.core.entities.user.User;
+import com.fiuza.great.food.core.exceptions.IncorrectPasswordException;
+import com.fiuza.great.food.core.exceptions.NotFoundException;
 import com.fiuza.great.food.core.gateway.UserGateway;
 import com.fiuza.great.food.helper.dto.user.UserDeleteDtoHelper;
 import com.fiuza.great.food.helper.dto.user.UserPasswordDtoHelper;
@@ -22,6 +24,7 @@ import java.util.Date;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -61,5 +64,43 @@ public class DeleteUserUseCaseTest {
 
         // assert
         verify(userGateway, times(1)).delete(any(Long.class));
+    }
+
+    @Test
+    void delete_user_should_fail_with_not_found() {
+        // arrange
+        UserDeleteDto userDeleteDto =  UserDeleteDtoHelper.defaultDto();
+
+        when(userGateway.findUserByEmail(any(String.class)))
+                .thenThrow(new NotFoundException("Usuário não encontrado"));
+
+
+        // act
+        assertThatThrownBy(
+                () -> deleteUserUseCase.execute(userDeleteDto))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("Usuário não encontrado");
+
+        // assert
+        verify(userGateway, times(1)).findUserByEmail(any(String.class));
+    }
+
+    @Test
+    void delete_user_should_fail_with_wrong_password() {
+        // arrange
+        UserDeleteDto userDeleteDto = UserDeleteDtoHelper.withWrongPassword();
+        User userResult = UserHelper.createUserWithId();
+
+
+        when(userGateway.findUserByEmail(userDeleteDto.email())).thenReturn(Optional.of(userResult));
+
+        // act
+        assertThatThrownBy(
+                () -> deleteUserUseCase.execute(userDeleteDto))
+                .isInstanceOf(IncorrectPasswordException.class)
+                .hasMessage("Senha incorreta, Por favor tente novamente.");
+
+        // assert
+        verify(userGateway, times(1)).findUserByEmail(any(String.class));
     }
 }

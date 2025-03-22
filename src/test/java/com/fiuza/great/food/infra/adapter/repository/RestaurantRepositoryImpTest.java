@@ -23,6 +23,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -69,5 +71,57 @@ public class RestaurantRepositoryImpTest {
 
         assertThat(capturedUser.getName()).isEqualTo(restaurantResult.getName());
         assertThat(savedRestaurant).isNotNull();
+    }
+
+    @Test
+    void update_success() {
+        // arrange
+        Restaurant restaurant = RestaurantHelper.restaurantWithoutId();
+        RestaurantModel restaurantModel = RestaurantModelHelper.createRestaurantDefault();
+        Restaurant restaurantResult = RestaurantHelper.restaurantDefault();
+
+        when(restaurantRepository.save(any(RestaurantModel.class))).thenReturn(restaurantModel);
+
+        // act
+        var savedRestaurant= restaurantRepositoryImp.update(restaurant);
+
+        // assert
+        ArgumentCaptor<RestaurantModel> userCaptor = ArgumentCaptor.forClass(RestaurantModel.class);
+        verify(restaurantRepository, times(1)).save(userCaptor.capture());
+
+        RestaurantModel capturedUser = userCaptor.getValue();
+
+        assertThat(capturedUser.getName()).isEqualTo(restaurantResult.getName());
+        assertThat(savedRestaurant).isNotNull();
+    }
+
+    @Test
+    void find_restaurant_by_id_success() {
+        // arrange
+        RestaurantModel restaurantModel = RestaurantModelHelper.createRestaurantDefault();
+        Restaurant restaurantResult = RestaurantHelper.restaurantDefault();
+
+
+        when(restaurantRepository.findById(any(Long.class))).thenReturn(Optional.of(restaurantModel));
+
+        // act
+        restaurantRepositoryImp.findRestaurantById(restaurantResult.getId());
+
+        // assert
+        verify(restaurantRepository, times(1)).findById(restaurantResult.getId());
+    }
+
+    @Test
+    void delete_restaurant_success() {
+        // arrange
+        Restaurant restaurant = RestaurantHelper.restaurantDefault();
+
+        doNothing().when(restaurantRepository).deleteById(any(Long.class));
+
+        // act
+        restaurantRepositoryImp.delete(restaurant.getId());
+
+        // assert
+        verify(restaurantRepository, times(1)).deleteById(restaurant.getId());
     }
 }

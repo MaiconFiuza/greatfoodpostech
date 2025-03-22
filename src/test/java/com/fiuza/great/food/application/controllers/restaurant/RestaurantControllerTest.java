@@ -11,6 +11,8 @@ import com.fiuza.great.food.core.dto.request.user.UserDto;
 import com.fiuza.great.food.core.dto.request.user.UserUpdateDto;
 import com.fiuza.great.food.core.entities.restaurant.Restaurant;
 import com.fiuza.great.food.core.entities.user.User;
+import com.fiuza.great.food.core.exceptions.NotFoundException;
+import com.fiuza.great.food.core.exceptions.WrongTypeOfUserException;
 import com.fiuza.great.food.core.gateway.UserGateway;
 import com.fiuza.great.food.core.usecases.restaurant.CreateRestaurantUseCase;
 import com.fiuza.great.food.core.usecases.restaurant.DeleteRestaurantUseCase;
@@ -144,5 +146,22 @@ public class RestaurantControllerTest {
                 .andExpect(status().isNoContent());
 
         verify(deleteRestaurantUseCase, times(1)).execute(any(Long.class));
+    }
+
+    @Test
+    public void create_restaurant_should_fail_with_wrong_type_of_user() throws Exception {
+        //arrange
+        RestaurantDto restaurantDto = RestaurantDtoHelper.defaultDto();
+
+        when(createRestaurantUseCase.execute(any(RestaurantDto.class)))
+                .thenThrow(new WrongTypeOfUserException("Apenas usuários do tipo OWNER podem cadastrar lojas"));
+
+        //act + assert
+        mockMvc.perform(post("/restaurant")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(restaurantDto)))
+                .andExpect(status().isBadRequest());
+
+        verify(createRestaurantUseCase, times(1)).execute(any(RestaurantDto.class));
     }
 }

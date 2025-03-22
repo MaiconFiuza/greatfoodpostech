@@ -10,4 +10,11 @@ public class UserDeleteDtoHelper {
                 "teste123"
         );
     }
+
+    public static UserDeleteDto withWrongPassword() {
+        return new UserDeleteDto(
+                "teste@teste.com.br",
+                "este123"
+        );
+    }
 }
